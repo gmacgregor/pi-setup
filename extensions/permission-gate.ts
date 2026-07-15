@@ -130,7 +130,10 @@ export default function (pi: ExtensionAPI) {
       }
 
       // If it's danger or warning, we ask the user
-      const title = dangerLevel === "danger" ? "🚨" : "⚠️";
+      const emoji = dangerLevel === "danger" ? "🚨" : "⚠️";
+      // Keep the collapsed row informative by putting the full command
+      // (untruncated, multi-line if necessary) right next to the emoji.
+      const title = `${emoji} ${command.trim()}`;
       const message = `Dangerous command blocked:\n\n\`\`\`bash\n${command}\n\`\`\`\n\nIn directory: \`${cwd}\``;
 
       // We use a custom menu for the "Always" options

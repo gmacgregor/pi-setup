@@ -276,26 +276,41 @@ export default function askUserExtension(pi: ExtensionAPI) {
             }
             lines.push("");
 
+            const indent = "      ";
+
             for (let i = 0; i < allOptions.length; i++) {
               const opt = allOptions[i];
               const selected = i === optionIndex;
               const prefix = selected ? theme.fg("accent", " ❯ ") : "   ";
               const marker = opt.isOther ? "✎" : `${i + 1}.`;
-              const label = `${marker} ${opt.label}`;
 
-              if (opt.isOther && editMode) {
-                add(prefix + theme.fg("accent", label));
-              } else if (selected) {
-                add(prefix + theme.fg("accent", label));
-              } else {
-                add(prefix + theme.fg(opt.isOther ? "muted" : "text", label));
-              }
+              const labelColor =
+                opt.isOther && editMode
+                  ? "accent"
+                  : selected
+                    ? "accent"
+                    : opt.isOther
+                      ? "muted"
+                      : "text";
+
+              // Wrap the label across as many indented lines as needed
+              // instead of truncating it to one line with an ellipsis.
+              const labelLines = wrapText(
+                opt.label,
+                Math.max(10, width - indent.length),
+              );
+              labelLines.forEach((line, lineIdx) => {
+                if (lineIdx === 0) {
+                  add(prefix + theme.fg(labelColor, `${marker} ${line}`));
+                } else {
+                  add(indent + theme.fg(labelColor, line));
+                }
+              });
 
               if (opt.description) {
                 // Unlike ask_user, wrap the description across as many
                 // indented lines as needed instead of truncating it to one
                 // line with an ellipsis.
-                const indent = "      ";
                 for (const line of wrapText(
                   opt.description,
                   Math.max(10, width - indent.length),

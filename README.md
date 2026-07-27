@@ -48,6 +48,7 @@ My full setup also uses a handful of third-party pi packages. These are
 pi install npm:pi-skill-toggle          # Enable/disable skills from loading at startup
 pi install npm:pi-zed-shift-enter       # Fixes Shift+Enter newlines when pi runs in Zed's terminal
 pi install npm:@gotgenes/pi-subagents   # Adds in-process sub-agent support
+pi install npm:@gotgenes/pi-permission-system  # Permission enforcement (policy/access-control) for shell and tool calls
 pi install npm:@diegopetrucci/pi-quiet-tools  # Visually compacts collapsed tool rows in the TUI
 pi install npm:pi-context-usage         # Context window usage visualization (also available via git:github.com/championswimmer/pi-context-usage)
 ```

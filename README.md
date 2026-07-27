@@ -24,7 +24,6 @@ Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and
 | `ask-user.ts` | Drop-in replacement for the built-in `ask_user` tool where long option descriptions word-wrap instead of getting truncated. |
 | `context-cap.ts` | Proactively triggers compaction once context usage crosses `min(maxTokens, maxPercent% of the model's context window)`, instead of relying on pi's flat `reserveTokens` default. Config persists to `~/.pi/agent/context-cap.json`. |
 | `minimal-footer.ts` | Compact two-line footer: git branch + cwd on line 1, context-cap status + model/thinking level on line 2. |
-| `permission-gate.ts` | Blocks potentially dangerous shell commands and asks for confirmation before running them. Config at `~/.pi/safety-guard-config.json`. |
 | `update-pi.ts` | Adds an `/update` command that updates the pi CLI itself (via vp, bun, npm, brew, or native detection), with retry handling for transient network errors. |
 | `whimsical.ts` | Swaps the default "thinking..." spinner text for a rotating list of whimsical status messages. |
 | `zsh-user-bash.ts` | Runs bash commands the model executes through your actual zsh (`-fc`) instead of pi's default shell, so zsh-specific aliases/functions work. |

@@ -12,9 +12,6 @@ involvement. pi discovers `extensions/` and `themes/` by convention.
 pi install git:github.com/gmacgregor/pi-setup
 ```
 
-This is a **private** repo, so installing requires git credentials with
-access to it (the same ones your `gh`/git setup already uses).
-
 Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and
 `pi update --extensions` to pull future changes.
 
@@ -51,7 +48,7 @@ My full setup also uses a handful of third-party pi packages. These are
 ```bash
 pi install npm:pi-skill-toggle          # Enable/disable skills from loading at startup
 pi install npm:pi-zed-shift-enter       # Fixes Shift+Enter newlines when pi runs in Zed's terminal
-pi install npm:pi-subagents             # Delegate tasks to subagents (chains, parallel, TUI clarification)
+pi install npm:@gotgenes/pi-subagents   # Adds in-process sub-agent support
 pi install npm:@diegopetrucci/pi-quiet-tools  # Visually compacts collapsed tool rows in the TUI
 pi install npm:pi-context-usage         # Context window usage visualization (also available via git:github.com/championswimmer/pi-context-usage)
 ```

@@ -70,6 +70,24 @@ interface DisplayOption {
   isOther?: boolean;
 }
 
+// Some model providers emit tool-call arguments where the JSON escape
+// sequences (\", \u2014, \n, ...) never get decoded into real characters -
+// the literal backslash-escape text ends up inside the string value. Detect
+// and decode that here so the UI shows real quotes/unicode instead of raw
+// escape sequences.
+function unescapeStrayJsonEscapes(text: string): string {
+  if (!text.includes("\\")) return text;
+  return text
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+      String.fromCharCode(parseInt(hex, 16)),
+    )
+    .replace(/\\n/g, "\n")
+    .replace(/\\t/g, "\t")
+    .replace(/\\r/g, "\r")
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, "\\");
+}
+
 function wrapText(text: string, width: number): string[] {
   const lines: string[] = [];
   for (const paragraph of text.split("\n")) {
@@ -108,7 +126,17 @@ export default function askUserExtension(pi: ExtensionAPI) {
 
     parameters: AskUserParams,
 
-    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+    async execute(_toolCallId, rawParams, signal, _onUpdate, ctx) {
+      const params: AskUserInput = {
+        question: unescapeStrayJsonEscapes(rawParams.question),
+        options: rawParams.options.map((o) => ({
+          label: unescapeStrayJsonEscapes(o.label),
+          description:
+            o.description !== undefined
+              ? unescapeStrayJsonEscapes(o.description)
+              : undefined,
+        })),
+      };
       const simpleOptions = params.options.map((o) => o.label);
       const baseDetails: Omit<
         AskUserDetails,

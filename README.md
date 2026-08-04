@@ -1,10 +1,6 @@
 # pi-setup
 
-My personal [pi](https://pi.dev) configuration: custom extensions and a theme,
-bundled so I can install them on a new machine (or share them) in one shot.
-
-This is a plain directory package — no `package.json`, no npm registry
-involvement. pi discovers `extensions/` and `themes/` by convention.
+My personal [pi](https://pi.dev) configuration.
 
 ## Install
 
@@ -12,8 +8,7 @@ involvement. pi discovers `extensions/` and `themes/` by convention.
 pi install git:github.com/gmacgregor/pi-setup
 ```
 
-Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and
-`pi update --extensions` to pull future changes.
+Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and `pi update --extensions` to pull future changes.
 
 ## What's included
 
@@ -30,19 +25,15 @@ Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and
 
 ### Themes (`themes/`)
 
-- `github-dark-default.json` — a customized dark theme based on GitHub's palette.
+- `github-dark-default.json`: a customized dark theme based on GitHub's palette.
 
 ### AGENTS.md
 
-`AGENTS.md` at the repo root is a copy of my global pi guidelines
-(question-asking style, TypeScript conventions, etc). It is **not** loaded
-automatically by installing this package — see [Optional extras](#optional-extras)
-below if you want to use it.
+`AGENTS.md` at the repo root is a copy of my global pi guidelines. It is **not** loaded automatically by installing this package. See [Optional extras](#optional-extras) below if you want to use it.
 
 ## Companion packages (not bundled)
 
-My full setup also uses a handful of third-party pi packages. These are
-**not** bundled into pi-setup — install them yourself if you want them:
+My full setup also uses a handful of third-party pi packages. These are **not** bundled into pi-setup. Install them yourself if you want them:
 
 ```bash
 pi install npm:pi-skill-toggle          # Enable/disable skills from loading at startup

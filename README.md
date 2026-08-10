@@ -17,6 +17,7 @@ Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and `pi update 
 | File | What it does |
 |---|---|
 | `ask-user.ts` | Drop-in replacement for the built-in `ask_user` tool where long option descriptions word-wrap instead of getting truncated. |
+| `copilot-endpoint.ts` | Pins the `github-copilot` provider to the API host encoded in your Copilot token (`proxy-ep`). Without it, compaction/summarization requests fall back to the individual host and business/enterprise seats fail with `421 Misdirected Request`. |
 | `context-cap.ts` | Proactively triggers compaction once context usage crosses `min(maxTokens, maxPercent% of the model's context window)`, instead of relying on pi's flat `reserveTokens` default. Config persists to `~/.pi/agent/context-cap.json`. |
 | `minimal-footer.ts` | Compact two-line footer: git branch + cwd on line 1, context-cap status + model/thinking level on line 2. |
 | `update-pi.ts` | Adds an `/update` command that updates the pi CLI itself (via vp, bun, npm, brew, or native detection), with retry handling for transient network errors. |

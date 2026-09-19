@@ -25,7 +25,7 @@ import {
 } from "@earendil-works/pi-tui";
 import { type Static, Type } from "typebox";
 
-const MIN_OPTIONS = 2;
+const MIN_OPTIONS = 1;
 const MAX_OPTIONS = 5;
 
 const OptionSchema = Type.Object({
@@ -43,8 +43,7 @@ const AskUserParams = Type.Object({
   options: Type.Array(OptionSchema, {
     minItems: MIN_OPTIONS,
     maxItems: MAX_OPTIONS,
-    description:
-      "Between 2 and 5 answer options. A free-form 'write my own answer' option is always appended automatically - never include one yourself.",
+    description: `Between ${MIN_OPTIONS} and ${MAX_OPTIONS} answer options. A free-form 'write my own answer' option is always appended automatically - never include one yourself.`,
   }),
 });
 

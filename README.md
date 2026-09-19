@@ -34,7 +34,7 @@ Use `pi remove git:github.com/gmacgregor/pi-setup` to uninstall, and `pi update 
 
 ## Companion packages (not bundled)
 
-My full setup also uses a handful of third-party pi packages. These are **not** bundled into pi-setup. Install them yourself if you want them:
+My full setup also uses a handful of third-party pi packages:
 
 ```bash
 pi install npm:pi-skill-toggle          # Enable/disable skills from loading at startup
@@ -42,6 +42,7 @@ pi install npm:pi-zed-shift-enter       # Fixes Shift+Enter newlines when pi run
 pi install npm:@gotgenes/pi-subagents   # Adds in-process sub-agent support
 pi install npm:@diegopetrucci/pi-quiet-tools  # Visually compacts collapsed tool rows in the TUI
 pi install npm:pi-context-usage         # Context window usage visualization (also available via git:github.com/championswimmer/pi-context-usage)
+pi install npm:@syzom/nopus             # Catch coding-agent answers that disappear into abstract LLM babble
 ```
 
 ## Optional extras

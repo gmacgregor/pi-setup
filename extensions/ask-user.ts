@@ -10,6 +10,9 @@
  * - Popup UI: arrow keys or number keys to pick, Enter to confirm
  * - "Write my own answer" opens an inline editor (Esc returns to the options)
  * - Esc on the options dismisses the question (the model is told you declined)
+ * - Refuses the call when the assistant message that made it has no visible
+ *   text: the user cannot see reasoning, so anything the question refers to
+ *   (plans, proposals, diffs) must be shown before asking
  *
  */
 
@@ -87,6 +90,46 @@ function unescapeStrayJsonEscapes(text: string): string {
     .replace(/\\\\/g, "\\");
 }
 
+type ContentBlock = { type: string; text?: string; id?: string };
+
+// Maps a top-level tool call id to whether its assistant message had visible
+// text. Filled from message_end, which fires before the tool runs.
+const visibleTextByCallId = new Map<string, boolean>();
+const MAX_TRACKED_CALLS = 200;
+
+function hasVisibleText(content: ContentBlock[]): boolean {
+  return content.some(
+    (block) => block.type === "text" && (block.text ?? "").trim().length > 0,
+  );
+}
+
+function rememberMessage(message: unknown) {
+  const msg = message as { role?: string; content?: unknown };
+  if (msg?.role !== "assistant" || !Array.isArray(msg.content)) return;
+  const content = msg.content as ContentBlock[];
+  const visible = hasVisibleText(content);
+  for (const block of content) {
+    if (block.type === "toolCall" && block.id) {
+      visibleTextByCallId.set(block.id, visible);
+    }
+  }
+  while (visibleTextByCallId.size > MAX_TRACKED_CALLS) {
+    const oldest = visibleTextByCallId.keys().next().value;
+    if (oldest === undefined) break;
+    visibleTextByCallId.delete(oldest);
+  }
+}
+
+// Nested calls (e.g. from codemode) get ids like "<parent id>/<n>"; the
+// transcript only knows the top-level id.
+function topLevelCallId(toolCallId: string): string {
+  const slash = toolCallId.indexOf("/");
+  return slash === -1 ? toolCallId : toolCallId.slice(0, slash);
+}
+
+const NO_VISIBLE_TEXT_ERROR =
+  "ask_user refused: your message had no visible text before this call. The user cannot see your reasoning. Write out in your reply everything the question refers to (plan, proposal, diff, findings, the options' meaning), then call ask_user again.";
+
 function wrapText(text: string, width: number): string[] {
   const lines: string[] = [];
   for (const paragraph of text.split("\n")) {
@@ -111,21 +154,31 @@ function wrapText(text: string, width: number): string[] {
 }
 
 export default function askUserExtension(pi: ExtensionAPI) {
+  pi.on("message_end", async (event) => {
+    rememberMessage(event.message);
+  });
+
   pi.registerTool({
     name: "ask_user",
     label: "Ask User",
     description:
-      "A free-form 'write my own answer' option is always appended automatically, and the user may dismiss the question without answering. Ask exactly one question per call.",
+      "A free-form 'write my own answer' option is always appended automatically, and the user may dismiss the question without answering. Ask exactly one question per call. The user cannot see your reasoning: before calling, write in your visible reply everything the question refers to (plans, proposals, diffs, findings). Calls from a message with no visible text are refused.",
     promptSnippet:
       "Ask the user a multiple-choice question (2-5 options plus a free-form answer)",
     promptGuidelines: [
       "When asking the user a question whose likely answers can be enumerated, use the ask_user tool instead of asking in plain text.",
       "Ask one question per ask_user call; never include a free-form option yourself, it is added automatically. Ask follow-up questions in subsequent calls.",
+      "Before calling ask_user, show in visible reply text whatever the question asks about (plan, proposal, diff, findings). The user cannot see your reasoning, so a question like 'As proposed?' with nothing shown is useless. ask_user refuses calls from a message with no visible text.",
     ],
 
     parameters: AskUserParams,
 
-    async execute(_toolCallId, rawParams, signal, _onUpdate, ctx) {
+    async execute(toolCallId, rawParams, signal, _onUpdate, ctx) {
+      // Fail open when the message is unknown (e.g. message_end not seen).
+      if (visibleTextByCallId.get(topLevelCallId(toolCallId)) === false) {
+        throw new Error(NO_VISIBLE_TEXT_ERROR);
+      }
+
       const params: AskUserInput = {
         question: unescapeStrayJsonEscapes(rawParams.question),
         options: rawParams.options.map((o) => ({
